@@ -61,6 +61,9 @@ Supported platforms (`type:` in config):
 2. **AWS** — `infra/` CDK app: DynamoDB table, Lambda (`handler.py` calling `runner.run`),
    EventBridge Scheduler, SES identity. Add `DynamoStore` implementing the `Store` protocol
    in `store.py`, and `send_ses()` in `notifier.py`.
+   No account IDs in the repo: the CDK app reads `CDK_DEFAULT_ACCOUNT` / `CDK_DEFAULT_REGION`,
+   which the CDK CLI fills from your AWS profile. Deploy with
+   `AWS_PROFILE=<your-profile> cdk deploy` (region: `ap-southeast-2`).
 3. **Hardening** — more platform adapters (Workday, Ashby, …) as your company list needs them, CSV of all open roles, CloudWatch alarm,
    AWS Budget, structured logging.
 4. **Extras** — Claude Haiku relevance scorer on new roles, Step Functions fan-out, CI deploy.
