@@ -9,3 +9,4 @@ cdk.out/
 .DS_Store
 .env
 .envrc
+PLAN.md
