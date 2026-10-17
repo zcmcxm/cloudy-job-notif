@@ -1,0 +1,73 @@
+{# Email HTML: inline styles only, simple tables — most mail clients ignore <style>. #}
+<!doctype html>
+<html>
+<body style="margin:0;padding:16px;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#1f2328;background:#ffffff;">
+<h2 style="margin:0 0 4px;">{{ subject }}</h2>
+<p style="margin:0 0 16px;color:#656d76;font-size:13px;">Run at {{ report.started_at.strftime("%Y-%m-%d %H:%M UTC") }}</p>
+
+<h3 style="margin:16px 0 8px;">Summary</h3>
+<table cellpadding="6" style="border-collapse:collapse;font-size:14px;">
+  <tr style="background:#f6f8fa;text-align:left;"><th>Company</th><th>Open here</th><th>New</th><th>Closed</th><th>Status</th></tr>
+  {% for r in report.results %}
+  <tr style="border-top:1px solid #d0d7de;">
+    <td>{{ r.company.name }}</td>
+    <td>{{ r.total_open }}</td>
+    <td>{{ "baseline" if r.baseline else r.new|length }}{% if r.hidden_new and not r.baseline %} <span style="color:#656d76;font-size:12px;">(+{{ r.hidden_new }} elsewhere)</span>{% endif %}</td>
+    <td>{{ r.closed|length }}</td>
+    <td>{{ "⚠️ error" if r.error else "ok" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% if report.hidden_new %}
+<p style="margin:8px 0 0;font-size:12px;color:#656d76;">{{ report.hidden_new }} new role{{ "s" if report.hidden_new != 1 }} outside your locations recorded but not listed. Clear <code>include_location</code> in the config to see every location.</p>
+{% endif %}
+
+{% set relevant = report.relevant_open %}
+<h3 style="margin:24px 0 8px;">⭐ Relevant open roles ({{ relevant|length }}, {{ report.relevant_new_count }} new)</h3>
+{% if relevant %}
+<ul style="padding-left:20px;font-size:14px;">
+  {% for company, m in relevant %}
+  <li style="margin-bottom:6px;">
+    {% if m.is_new and not company.id in baseline_ids %}<span style="background:#1a7f37;color:#ffffff;font-size:11px;font-weight:600;padding:1px 5px;border-radius:3px;">NEW</span> {% endif %}
+    <a href="{{ m.job.url }}" style="font-weight:600;">{{ m.job.title }}</a> — {{ company.name }}{% if m.job.location %}, {{ m.job.location }}{% endif %}
+    <br><span style="color:#656d76;font-size:12px;">{{ m.match.reason }}{% if m.open_since %} · {{ m.open_since | open_since(report.started_at) }}{% endif %}</span>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p style="font-size:14px;color:#656d76;">No open roles match your rules.</p>
+{% endif %}
+
+<h3 style="margin:24px 0 8px;">All new roles</h3>
+{% for r in report.results if r.new %}
+<p style="margin:12px 0 4px;font-weight:600;">{{ r.company.name }}{% if r.baseline %} <span style="font-weight:400;color:#656d76;">(first run — everything is new)</span>{% endif %}</p>
+<ul style="padding-left:20px;font-size:14px;margin:0;">
+  {% for m in r.new %}
+  <li{% if m.match.relevant %} style="background:#fff8c5;"{% endif %}>
+    <a href="{{ m.job.url }}">{{ m.job.title }}</a>{% if m.job.location %} — {{ m.job.location }}{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p style="font-size:14px;color:#656d76;">No new roles.</p>
+{% endfor %}
+
+{% if report.results | selectattr("closed") | list %}
+<h3 style="margin:24px 0 8px;">Closed since last run</h3>
+<ul style="padding-left:20px;font-size:13px;color:#656d76;">
+  {% for r in report.results %}{% for j in r.closed %}
+  <li>{{ r.company.name }}: {{ j.title }}</li>
+  {% endfor %}{% endfor %}
+</ul>
+{% endif %}
+
+{% if report.errors %}
+<h3 style="margin:24px 0 8px;color:#cf222e;">Scrape problems</h3>
+<ul style="padding-left:20px;font-size:13px;">
+  {% for r in report.errors %}
+  <li><b>{{ r.company.name }}</b>: {{ r.error }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+</body>
+</html>

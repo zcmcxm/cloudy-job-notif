@@ -1,0 +1,35 @@
+{
+  "count": 12,
+  "positions": [
+    {
+      "id": 755957532215,
+      "name": "Server-Side Engineer (C++) - Pre-Trade Risk Technology",
+      "location": "Singapore, Singapore",
+      "locations": [
+        "Singapore, Singapore"
+      ],
+      "department": "Information Technology",
+      "canonicalPositionUrl": "https://mlp.eightfold.ai/careers/job/755957532215",
+      "display_job_id": "REQ-30091",
+      "t_create": 1784592000,
+      "t_update": 1784592000
+    },
+    {
+      "id": 755957362218,
+      "name": "Quantitative Researcher, Quantitative Strategies",
+      "location": "Hong Kong, Hong Kong",
+      "locations": [
+        "Singapore, Singapore",
+        "Hong Kong, Hong Kong",
+        "Tokyo, Tokyo, Japan",
+        "Dubai, United Arab Emirates",
+        "Shanghai, Shanghai, China"
+      ],
+      "department": "Trading",
+      "canonicalPositionUrl": "https://mlp.eightfold.ai/careers/job/755957362218",
+      "display_job_id": "REQ-29970",
+      "t_create": 1783641600,
+      "t_update": 1783641600
+    }
+  ]
+}

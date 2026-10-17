@@ -1,0 +1,274 @@
+# Companies to watch. `type` picks the scraper adapter (see src/job_alert/scrapers/).
+# Find a company's ATS by opening a job link on their careers page:
+#   boards.greenhouse.io/<token>/...  -> type: greenhouse, token: <token>
+#   jobs.lever.co/<token>/...         -> type: lever,      token: <token>
+#   /careers?...&domain=<d>&pid=...   -> type: eightfold,  url: <scheme+host>, options.domain: <d>
+#   anything else                     -> see "Adding a company's own careers site" in README.md
+companies:
+  - id: okx
+    name: OKX
+    type: greenhouse
+    token: okx
+  - id: tower
+    name: Tower Research Capital
+    type: greenhouse
+    token: towerresearchcapital   # careers site embeds Greenhouse (?gh_jid=...)
+  - id: squarepoint
+    name: Squarepoint Capital
+    type: greenhouse
+    token: squarepointcapital     # careers site embeds Greenhouse (?gh_jid=...)
+  - id: mlp
+    name: Millennium (MLP)
+    type: eightfold
+    url: https://career.mlp.com
+    options:
+      domain: mlp.com
+      location: Singapore   # optional server-side filter; remove to watch all locations
+
+  # --- Hedge funds (Greenhouse; job counts as of 2026-10-12) ---
+  - id: aqr
+    name: AQR
+    type: greenhouse
+    token: aqr   # 53 jobs, 0 in Singapore
+  - id: exoduspoint
+    name: ExodusPoint
+    type: greenhouse
+    token: exoduspoint   # 2 jobs, 0 in Singapore
+  - id: garda-capital
+    name: Garda Capital
+    type: greenhouse
+    token: gardacp   # 14 jobs, 0 in Singapore
+  - id: graham-capital
+    name: Graham Capital
+    type: greenhouse
+    token: grahamcapitalmanagement   # 11 jobs, 0 in Singapore
+  - id: man-group
+    name: Man Group
+    type: greenhouse
+    token: mangroup   # 55 jobs, 0 in Singapore
+  - id: marshall-wace
+    name: Marshall Wace
+    type: greenhouse
+    token: marshallwace   # 1 jobs, 0 in Singapore
+  - id: pdt-partners
+    name: PDT Partners
+    type: greenhouse
+    token: pdtpartners   # 11 jobs, 0 in Singapore
+  - id: point72
+    name: Point72
+    type: greenhouse
+    token: point72   # 221 jobs, 10 in Singapore
+  - id: qrt
+    name: Qube Research & Technologies
+    type: greenhouse
+    token: quberesearchandtechnologies   # 194 jobs, 10 in Singapore
+  - id: schonfeld
+    name: Schonfeld
+    type: greenhouse
+    token: schonfeld   # 68 jobs, 3 in Singapore
+  - id: winton
+    name: Winton
+    type: greenhouse
+    token: winton   # 8 jobs, 0 in Singapore
+  - id: worldquant
+    name: WorldQuant
+    type: greenhouse
+    token: worldquant   # 95 jobs, 12 in Singapore
+
+  # --- Prop trading / market makers (Greenhouse; job counts as of 2026-10-12) ---
+  - id: akuna-capital
+    name: Akuna Capital
+    type: greenhouse
+    token: akunacapital   # 41 jobs, 3 in Singapore
+  - id: alphagrep
+    name: AlphaGrep
+    type: greenhouse
+    token: alphagrepsecurities   # 15 jobs, 0 in Singapore
+  - id: ctc
+    name: Chicago Trading Company
+    type: greenhouse
+    token: chicagotrading   # 24 jobs, 0 in Singapore
+  - id: drw
+    name: DRW
+    type: greenhouse
+    token: drweng   # 176 jobs, 23 in Singapore
+  - id: da-vinci
+    name: Da Vinci
+    type: greenhouse
+    token: davinciderivatives   # 16 jobs, 0 in Singapore
+  - id: eclipse-trading
+    name: Eclipse Trading
+    type: greenhouse
+    token: eclipsetrading   # 17 jobs, 0 in Singapore
+  - id: flow-traders
+    name: Flow Traders
+    type: greenhouse
+    token: flowtraders   # 47 jobs, 0 in Singapore
+  - id: gsr
+    name: GSR
+    type: greenhouse
+    token: gsrmarkets   # 6 jobs, 2 in Singapore
+  - id: geneva-trading
+    name: Geneva Trading
+    type: greenhouse
+    token: genevatrading   # 14 jobs, 0 in Singapore
+  - id: graviton
+    name: Graviton
+    type: greenhouse
+    token: gravitonresearchcapital   # 21 jobs, 5 in Singapore
+  - id: hrt
+    name: Hudson River Trading
+    type: greenhouse
+    token: wehrtyou   # 87 jobs, 24 in Singapore
+  - id: imc-trading
+    name: IMC Trading
+    type: greenhouse
+    token: imc   # 176 jobs, 0 in Singapore
+  - id: jane-street
+    name: Jane Street
+    type: greenhouse
+    token: janestreet   # 230 jobs, 15 in Singapore
+  - id: jump-trading
+    name: Jump Trading
+    type: greenhouse
+    token: jumptrading   # 105 jobs, 18 in Singapore
+  - id: mako
+    name: Mako
+    type: greenhouse
+    token: mako   # 6 jobs, 1 in Singapore
+  - id: old-mission
+    name: Old Mission
+    type: greenhouse
+    token: oldmissioncapital   # 38 jobs, 0 in Singapore
+  - id: vatic-labs
+    name: Vatic Labs
+    type: greenhouse
+    token: vaticlabs   # 7 jobs, 0 in Singapore
+  - id: virtu
+    name: Virtu
+    type: greenhouse
+    token: virtu   # 47 jobs, 13 in Singapore
+
+  # --- Fintech / crypto (Greenhouse; job counts as of 2026-10-12) ---
+  - id: adyen
+    name: Adyen
+    type: greenhouse
+    token: adyen   # 237 jobs, 20 in Singapore
+  - id: affirm
+    name: Affirm
+    type: greenhouse
+    token: affirm   # 203 jobs, 0 in Singapore
+  - id: alpaca
+    name: Alpaca
+    type: greenhouse
+    token: alpaca   # 78 jobs, 0 in Singapore
+  - id: bitgo
+    name: Bitgo
+    type: greenhouse
+    token: bitgo   # 52 jobs, 4 in Singapore
+  - id: block
+    name: Block (Square)
+    type: greenhouse
+    token: block   # 231 jobs, 1 in Singapore
+  - id: brex
+    name: Brex
+    type: greenhouse
+    token: brex   # 277 jobs, 0 in Singapore
+  - id: bybit
+    name: Bybit
+    type: greenhouse
+    token: bybit   # 161 jobs, 0 in Singapore
+  - id: carta
+    name: Carta
+    type: greenhouse
+    token: carta   # 72 jobs, 5 in Singapore
+  - id: chime
+    name: Chime
+    type: greenhouse
+    token: chime   # 67 jobs, 0 in Singapore
+  - id: clear-street
+    name: Clear Street
+    type: greenhouse
+    token: clearstreet   # 45 jobs, 0 in Singapore
+  - id: coinbase
+    name: Coinbase
+    type: greenhouse
+    token: coinbase   # 223 jobs, 7 in Singapore
+  - id: figure
+    name: Figure
+    type: greenhouse
+    token: figure   # 20 jobs, 0 in Singapore
+  - id: fireblocks
+    name: Fireblocks
+    type: greenhouse
+    token: fireblocks   # 28 jobs, 4 in Singapore
+  - id: gemini
+    name: Gemini
+    type: greenhouse
+    token: gemini   # 35 jobs, 2 in Singapore
+  - id: gocardless
+    name: GoCardless
+    type: greenhouse
+    token: gocardless   # 29 jobs, 0 in Singapore
+  - id: mercury
+    name: Mercury
+    type: greenhouse
+    token: mercury   # 70 jobs, 0 in Singapore
+  - id: monzo
+    name: Monzo
+    type: greenhouse
+    token: monzo   # 66 jobs, 0 in Singapore
+  - id: payoneer
+    name: Payoneer
+    type: greenhouse
+    token: payoneer   # 97 jobs, 0 in Singapore
+  - id: ripple
+    name: Ripple
+    type: greenhouse
+    token: ripple   # 120 jobs, 4 in Singapore
+  - id: robinhood
+    name: Robinhood
+    type: greenhouse
+    token: robinhood   # 181 jobs, 1 in Singapore
+  - id: sofi
+    name: SoFi
+    type: greenhouse
+    token: sofi   # 51 jobs, 0 in Singapore
+  - id: stripe
+    name: Stripe
+    type: greenhouse
+    token: stripe   # 724 jobs, 50 in Singapore
+  - id: thunes
+    name: Thunes
+    type: greenhouse
+    token: thunes   # 46 jobs, 9 in Singapore
+  - id: toast
+    name: Toast
+    type: greenhouse
+    token: toast   # 319 jobs, 0 in Singapore
+  - id: upstart
+    name: Upstart
+    type: greenhouse
+    token: upstart   # 88 jobs, 0 in Singapore
+  - id: xendit
+    name: Xendit
+    type: greenhouse
+    token: xendit   # 27 jobs, 9 in Singapore
+
+  # --- Not Greenhouse: enable once the adapter exists/passes its tests ---
+  # - {id: airwallex, name: Airwallex, type: ashby, token: airwallex}   # 518 jobs, 144 in Singapore
+  # - {id: paxos, name: Paxos, type: ashby, token: paxos}   # 18 jobs, 1 in Singapore
+  # - {id: plaid, name: Plaid, type: ashby, token: plaid}   # 121 jobs, 0 in Singapore
+  # - {id: ramp, name: Ramp, type: ashby, token: ramp}   # 166 jobs, 0 in Singapore
+  - {id: anchorage-digital, name: Anchorage Digital, type: lever, token: anchorage}   # 22 jobs, 4 in Singapore
+  - {id: belvedere-trading, name: Belvedere Trading, type: lever, token: belvederetrading}   # 20 jobs, 1 in Singapore
+  - {id: cryptocom, name: Crypto.com, type: lever, token: crypto}   # 84 jobs, 6 in Singapore
+  - {id: nium, name: Nium, type: lever, token: nium}   # 17 jobs, 2 in Singapore
+  - {id: dlocal, name: dLocal, type: lever, token: dlocal}   # 53 jobs, 3 in Singapore
+
+matching:
+  # Case-insensitive substring matches.
+  include_title: ["software engineer", "backend", "java", "python", "software developer", "quantitative developer", "quant developer", "trading system", "trading platform", "trading engine", "trading infrastructure"]
+  exclude_title: ["director", "intern", "grad", "manager", "lead", "principal", "reliability", "site reliability", "sre", "devops", "qa", "test", "data engineer", "data scientist"]
+  # Leave empty to accept any location.
+  include_location: ["singapore"]

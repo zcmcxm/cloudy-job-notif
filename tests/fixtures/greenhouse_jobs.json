@@ -1,0 +1,9 @@
+{
+  "jobs": [
+    {"id": 4012345, "title": "Senior Backend Engineer (Python) ", "location": {"name": "London, UK"},
+     "absolute_url": "https://boards.greenhouse.io/acme/jobs/4012345", "updated_at": "2026-09-30T10:00:00-04:00"},
+    {"id": 4012399, "title": "Product Designer", "location": {"name": "Remote - EU"},
+     "absolute_url": "https://boards.greenhouse.io/acme/jobs/4012399", "updated_at": "2026-09-29T10:00:00-04:00"}
+  ],
+  "meta": {"total": 2}
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "5f1c2b9e-1111-4a2b-9c3d-aaaaaaaaaaaa",
+    "text": "Cloud Platform Engineer",
+    "categories": {"location": "Remote", "team": "Infrastructure", "commitment": "Full-time"},
+    "hostedUrl": "https://jobs.lever.co/foo/5f1c2b9e-1111-4a2b-9c3d-aaaaaaaaaaaa",
+    "createdAt": 1727700000000
+  },
+  {
+    "id": "7a8b9c0d-2222-4e5f-8a9b-bbbbbbbbbbbb",
+    "text": "Data Analyst",
+    "categories": {},
+    "hostedUrl": "https://jobs.lever.co/foo/7a8b9c0d-2222-4e5f-8a9b-bbbbbbbbbbbb",
+    "createdAt": 1727600000000
+  }
+]

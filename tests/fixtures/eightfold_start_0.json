@@ -1,0 +1,139 @@
+{
+  "count": 12,
+  "positions": [
+    {
+      "id": 755958904170,
+      "name": "Software Engineer, Treasury Technology",
+      "location": "Singapore, Singapore",
+      "locations": [
+        "Singapore, Singapore"
+      ],
+      "department": "Information Technology",
+      "canonicalPositionUrl": "https://mlp.eightfold.ai/careers/job/755958904170",
+      "display_job_id": "REQ-31281",
+      "t_create": 1790294400,
+      "t_update": 1790294400
+    },
+    {
+      "id": 755958659703,
+      "name": "Compliance Associate",
+      "location": "Singapore, Singapore",
+      "locations": [
+        "Singapore, Singapore"
+      ],
+      "department": "Compliance",
+      "canonicalPositionUrl": "https://mlp.eightfold.ai/careers/job/755958659703",
+      "display_job_id": "REQ-31084",
+      "t_create": 1788825600,
+      "t_update": 1788825600
+    },
+    {
+      "id": 755958596303,
+      "name": "Portfolio Pricing and Valuation Lead",
+      "location": "Singapore, Singapore",
+      "locations": [
+        "Singapore, Singapore"
+      ],
+      "department": "Operations & Middle Office",
+      "canonicalPositionUrl": "https://mlp.eightfold.ai/careers/job/755958596303",
+      "display_job_id": "REQ-30856",
+      "t_create": 1788393600,
+      "t_update": 1788393600
+    },
+    {
+      "id": 755958456084,
+      "name": "Linux Low Latency Systems Engineer",
+      "location": "Singapore, Singapore",
+      "locations": [
+        "Singapore, Singapore"
+      ],
+      "department": "Information Technology",
+      "canonicalPositionUrl": "https://mlp.eightfold.ai/careers/job/755958456084",
+      "display_job_id": "REQ-30793",
+      "t_create": 1787875200,
+      "t_update": 1787875200
+    },
+    {
+      "id": 755958425590,
+      "name": "AI DevOps Engineer",
+      "location": "Singapore, Singapore",
+      "locations": [
+        "Singapore, Singapore"
+      ],
+      "department": "Information Technology",
+      "canonicalPositionUrl": "https://mlp.eightfold.ai/careers/job/755958425590",
+      "display_job_id": "REQ-30772",
+      "t_create": 1787788800,
+      "t_update": 1787788800
+    },
+    {
+      "id": 755958325805,
+      "name": "Middle Office Specialist - Commodities",
+      "location": "Singapore, Singapore",
+      "locations": [
+        "Singapore, Singapore"
+      ],
+      "department": "Operations & Middle Office",
+      "canonicalPositionUrl": "https://mlp.eightfold.ai/careers/job/755958325805",
+      "display_job_id": "REQ-30743",
+      "t_create": 1787529600,
+      "t_update": 1787529600
+    },
+    {
+      "id": 755958347593,
+      "name": "Systematic Production Support Engineer",
+      "location": "Singapore, Singapore",
+      "locations": [
+        "Singapore, Singapore"
+      ],
+      "department": "Information Technology",
+      "canonicalPositionUrl": "https://mlp.eightfold.ai/careers/job/755958347593",
+      "display_job_id": "REQ-30753",
+      "t_create": 1787529600,
+      "t_update": 1787529600
+    },
+    {
+      "id": 755957089335,
+      "name": "Client Services Associate",
+      "location": "Singapore, Singapore",
+      "locations": [
+        "Singapore, Singapore"
+      ],
+      "department": "Capital Development & Investor Relations",
+      "canonicalPositionUrl": "https://mlp.eightfold.ai/careers/job/755957089335",
+      "display_job_id": "REQ-29858",
+      "t_create": 1785888000,
+      "t_update": 1790899200
+    },
+    {
+      "id": 755957885726,
+      "name": "Network Engineer",
+      "location": "Singapore, Singapore",
+      "locations": [
+        "Singapore, Singapore"
+      ],
+      "department": "Information Technology",
+      "canonicalPositionUrl": "https://mlp.eightfold.ai/careers/job/755957885726",
+      "display_job_id": "REQ-30377",
+      "t_create": 1785715200,
+      "t_update": 1785715200
+    },
+    {
+      "id": 755957516253,
+      "name": "Deep Learning Quantitative Researcher",
+      "location": "Hong Kong, Hong Kong",
+      "locations": [
+        "Singapore, Singapore",
+        "Hong Kong, Hong Kong",
+        "Tokyo, Tokyo, Japan",
+        "Dubai, United Arab Emirates",
+        "Shanghai, Shanghai, China"
+      ],
+      "department": "Trading",
+      "canonicalPositionUrl": "https://mlp.eightfold.ai/careers/job/755957516253",
+      "display_job_id": "REQ-30088",
+      "t_create": 1784592000,
+      "t_update": 1784851200
+    }
+  ]
+}
