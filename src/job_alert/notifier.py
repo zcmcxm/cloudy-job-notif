@@ -1,9 +1,11 @@
-"""Render the run report as an HTML email. Phase 2 adds `send_ses(html, ...)`."""
+"""Render the run report as an email (HTML + plain-text fallback) and send it with SES."""
 
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
+import boto3
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from job_alert.models import RunReport
@@ -47,3 +49,41 @@ def render_html(report: RunReport) -> str:
     return _env.get_template("digest.html.j2").render(
         report=report, subject=subject(report), baseline_ids=baseline_ids
     )
+
+
+def render_text(report: RunReport) -> str:
+    """Plain-text part of the email, for clients that don't show HTML: the relevant roles."""
+    lines = [subject(report), ""]
+    for company, m in report.relevant_open:
+        lines.append(f"- {m.job.title} — {company.name}" + (f", {m.job.location}" if m.job.location else ""))
+        lines.append(f"  {m.job.url}")
+    if not report.relevant_open:
+        lines.append("No open roles match your rules.")
+    for r in report.errors:
+        lines.append(f"! {r.company.name}: {r.error}")
+    return "\n".join(lines) + "\n"
+
+
+def send_ses(subject: str, html: str, text: str, *, sender: str, recipient: str, client: Any = None) -> str:
+    """Email the digest through SES v2 and return the SES MessageId.
+
+    `sender` must be a verified SES identity (in the sandbox, `recipient` too).
+    `client` is a boto3 "sesv2" client; create one when it's None.
+    Don't catch errors here: if sending fails, the handler must not save the store,
+    so the same new roles are reported again on the next run.
+    """
+    client = client or boto3.client("sesv2")
+    resp = client.send_email(
+        FromEmailAddress=sender,
+        Destination={"ToAddresses": [recipient]},
+        Content={
+            "Simple": {
+                "Subject": {"Data": subject, "Charset": "UTF-8"},
+                "Body": {
+                    "Html": {"Data": html, "Charset": "UTF-8"},
+                    "Text": {"Data": text, "Charset": "UTF-8"},
+                },
+            }
+        },
+    )
+    return resp["MessageId"]
