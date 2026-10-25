@@ -136,10 +136,6 @@ companies:
     name: Mako
     type: greenhouse
     token: mako   # 6 jobs, 1 in Singapore
-  - id: old-mission
-    name: Old Mission
-    type: greenhouse
-    token: oldmissioncapital   # 38 jobs, 0 in Singapore
   - id: vatic-labs
     name: Vatic Labs
     type: greenhouse
