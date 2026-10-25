@@ -23,8 +23,8 @@ from job_alert.scrapers.base import require_token
 API = "https://api.lever.co/v0/postings/{token}"
 
 
-def fetch(company: CompanyConfig, client: httpx.Client) -> list[Job]:
-    resp = client.get(API.format(token=require_token(company)), params={"mode": "json"})
+async def fetch(company: CompanyConfig, client: httpx.AsyncClient) -> list[Job]:
+    resp = await client.get(API.format(token=require_token(company)), params={"mode": "json"})
     resp.raise_for_status()
     return [
         Job(

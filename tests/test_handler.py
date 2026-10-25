@@ -33,7 +33,11 @@ def env(aws_env, tmp_path, monkeypatch):
         monkeypatch.setenv(k, v)
 
     scraped = {"jobs": []}
-    monkeypatch.setattr(runner, "get_scraper", lambda type_: lambda company, client: scraped["jobs"])
+
+    async def fake_scraper(company, client):
+        return scraped["jobs"]
+
+    monkeypatch.setattr(runner, "get_scraper", lambda type_: fake_scraper)
     return scraped, table
 
 
@@ -80,7 +84,7 @@ def test_failed_send_saves_nothing(env, monkeypatch):
 
 
 def test_scrape_errors_are_reported_not_raised(env, monkeypatch):
-    def broken(company, client):
+    async def broken(company, client):
         raise RuntimeError("site down")
 
     monkeypatch.setattr(runner, "get_scraper", lambda type_: broken)

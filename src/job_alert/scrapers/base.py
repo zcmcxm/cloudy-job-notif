@@ -10,16 +10,22 @@ USER_AGENT = "cloudy-job-notif/0.1 (personal job alert; low frequency)"
 
 
 class Scraper(Protocol):
-    def __call__(self, company: CompanyConfig, client: httpx.Client) -> list[Job]: ...
+    """An adapter is a coroutine function: `async def fetch(company, client) -> list[Job]`."""
+
+    async def __call__(self, company: CompanyConfig, client: httpx.AsyncClient) -> list[Job]: ...
 
 
-def make_client() -> httpx.Client:
-    """Shared HTTP client: polite UA, sane timeouts, one retry on connection errors."""
-    return httpx.Client(
+def make_client() -> httpx.AsyncClient:
+    """Shared async HTTP client: polite UA, sane timeouts, one retry on connection errors.
+
+    One client for the whole run so connections to the same host (most companies are on
+    Greenhouse) are reused. Use it as `async with make_client() as client:`.
+    """
+    return httpx.AsyncClient(
         headers={"User-Agent": USER_AGENT},
         timeout=httpx.Timeout(20.0),
         follow_redirects=True,
-        transport=httpx.HTTPTransport(retries=1),
+        transport=httpx.AsyncHTTPTransport(retries=1),
     )
 
 

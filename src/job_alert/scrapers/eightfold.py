@@ -32,7 +32,7 @@ API = "{base}/api/apply/v2/jobs"
 MAX_PAGES = 50
 
 
-def fetch(company: CompanyConfig, client: httpx.Client) -> list[Job]:
+async def fetch(company: CompanyConfig, client: httpx.AsyncClient) -> list[Job]:
     endpoint = API.format(base=require_url(company))
     params = {"domain": require_option(company, "domain")}
     if location := company.options.get("location"):
@@ -40,7 +40,7 @@ def fetch(company: CompanyConfig, client: httpx.Client) -> list[Job]:
 
     jobs: list[Job] = []
     for _ in range(MAX_PAGES):
-        resp = client.get(endpoint, params={**params, "start": len(jobs)})
+        resp = await client.get(endpoint, params={**params, "start": len(jobs)})
         resp.raise_for_status()
         data = resp.json()
         positions = data.get("positions") or []

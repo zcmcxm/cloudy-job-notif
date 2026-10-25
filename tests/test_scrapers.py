@@ -1,9 +1,27 @@
+import asyncio
+import inspect
+
 import httpx
 import pytest
 import respx
 
 from job_alert.models import CompanyConfig
-from job_alert.scrapers import get_scraper
+from job_alert.scrapers import REGISTRY, get_scraper
+
+
+def scrape(type_, *companies):
+    """Run adapter `type_` for each company on one AsyncClient; returns the last result."""
+    async def go():
+        async with httpx.AsyncClient() as client:
+            for company in companies:
+                result = await get_scraper(type_)(company, client)
+            return result
+    return asyncio.run(go())
+
+
+@pytest.mark.parametrize("type_", sorted(REGISTRY))
+def test_adapters_are_coroutine_functions(type_):
+    assert inspect.iscoroutinefunction(REGISTRY[type_]), f"{type_}.fetch must be `async def`"
 
 
 @respx.mock
@@ -12,8 +30,7 @@ def test_greenhouse(load_fixture):
         json=load_fixture("greenhouse_jobs.json")
     )
     company = CompanyConfig(id="acme", name="Acme", type="greenhouse", token="acme")
-    with httpx.Client() as client:
-        jobs = get_scraper("greenhouse")(company, client)
+    jobs = scrape("greenhouse", company)
     assert [j.job_id for j in jobs] == ["4012345", "4012399"]
     assert jobs[0].title == "Senior Backend Engineer (Python)"
     assert jobs[0].location == "London, UK"
@@ -26,8 +43,7 @@ def test_lever(load_fixture):
         json=load_fixture("lever_postings.json")
     )
     company = CompanyConfig(id="foo", name="Foo", type="lever", token="foo")
-    with httpx.Client() as client:
-        jobs = get_scraper("lever")(company, client)
+    jobs = scrape("lever", company)
     assert route.calls.last.request.url.params["mode"] == "json"
     assert len(jobs) == 2
     assert jobs[0].job_id == "5f1c2b9e-1111-4a2b-9c3d-aaaaaaaaaaaa"
@@ -42,8 +58,8 @@ def test_lever(load_fixture):
 def test_http_error_raises():
     respx.get("https://boards-api.greenhouse.io/v1/boards/nope/jobs").respond(404)
     company = CompanyConfig(id="nope", name="Nope", type="greenhouse", token="nope")
-    with httpx.Client() as client, pytest.raises(httpx.HTTPStatusError):
-        get_scraper("greenhouse")(company, client)
+    with pytest.raises(httpx.HTTPStatusError):
+        scrape("greenhouse", company)
 
 
 def test_unknown_type():
@@ -77,8 +93,7 @@ def _serve_pages(load_fixture):
 @respx.mock
 def test_eightfold_paginates_and_maps_fields(load_fixture):
     route = respx.get(EIGHTFOLD_API).mock(side_effect=_serve_pages(load_fixture))
-    with httpx.Client() as client:
-        jobs = get_scraper("eightfold")(_eightfold_company(), client)
+    jobs = scrape("eightfold", _eightfold_company())
 
     assert len(jobs) == 12
     assert route.call_count == 2  # start=0 and start=10; no third request once start >= count
@@ -95,9 +110,7 @@ def test_eightfold_paginates_and_maps_fields(load_fixture):
 @respx.mock
 def test_eightfold_sends_domain_and_optional_location(load_fixture):
     route = respx.get(EIGHTFOLD_API).mock(side_effect=_serve_pages(load_fixture))
-    with httpx.Client() as client:
-        get_scraper("eightfold")(_eightfold_company(location="Singapore"), client)
-        get_scraper("eightfold")(_eightfold_company(), client)
+    scrape("eightfold", _eightfold_company(location="Singapore"), _eightfold_company())
 
     with_loc, without_loc = route.calls[0].request.url.params, route.calls[-1].request.url.params
     assert with_loc["domain"] == "mlp.com" and with_loc["location"] == "Singapore"
@@ -107,8 +120,7 @@ def test_eightfold_sends_domain_and_optional_location(load_fixture):
 @respx.mock
 def test_eightfold_stops_on_empty_page_even_if_count_says_more():
     route = respx.get(EIGHTFOLD_API).respond(json={"count": 500, "positions": []})
-    with httpx.Client() as client:
-        assert get_scraper("eightfold")(_eightfold_company(), client) == []
+    assert scrape("eightfold", _eightfold_company()) == []
     assert route.call_count == 1
 
 
@@ -116,11 +128,11 @@ def test_eightfold_stops_on_empty_page_even_if_count_says_more():
 def test_eightfold_refuses_to_return_truncated_results(load_fixture):
     page = load_fixture("eightfold_start_0.json")
     respx.get(EIGHTFOLD_API).respond(json={**page, "count": 100_000})
-    with httpx.Client() as client, pytest.raises(RuntimeError, match="pages"):
-        get_scraper("eightfold")(_eightfold_company(), client)
+    with pytest.raises(RuntimeError, match="pages"):
+        scrape("eightfold", _eightfold_company())
 
 
 def test_eightfold_requires_domain():
     company = CompanyConfig(id="x", name="X", type="eightfold", url="https://career.x.com")
     with pytest.raises(ValueError, match="options.domain"):
-        get_scraper("eightfold")(company, httpx.Client())
+        scrape("eightfold", company)

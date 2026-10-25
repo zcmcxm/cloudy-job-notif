@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import logging
 from pathlib import Path
 
@@ -25,8 +26,7 @@ def main(argv: list[str] | None = None) -> None:
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     store = LocalJsonStore(args.store)
-    with make_client() as client:
-        report = run(load_config(args.config), store, client)
+    report = asyncio.run(_scrape(args.config, store))
     if not args.dry_run:
         store.save()
 
@@ -35,6 +35,11 @@ def main(argv: list[str] | None = None) -> None:
     out.write_text(render_html(report))
     print(subject(report))
     print(f"Digest written to {out.resolve()}")
+
+
+async def _scrape(config_path: str, store: LocalJsonStore):
+    async with make_client() as client:
+        return await run(load_config(config_path), store, client)
 
 
 if __name__ == "__main__":

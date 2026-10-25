@@ -13,8 +13,8 @@ from job_alert.scrapers.base import require_token
 API = "https://boards-api.greenhouse.io/v1/boards/{token}/jobs"
 
 
-def fetch(company: CompanyConfig, client: httpx.Client) -> list[Job]:
-    resp = client.get(API.format(token=require_token(company)))
+async def fetch(company: CompanyConfig, client: httpx.AsyncClient) -> list[Job]:
+    resp = await client.get(API.format(token=require_token(company)))
     resp.raise_for_status()
     return [
         Job(

@@ -1,35 +1,68 @@
-"""One full run: scrape every company, diff, match, persist. Shared by the CLI and the Lambda."""
+"""One full run: scrape every company, diff, match, persist. Shared by the CLI and the Lambda.
+
+Two phases:
+  1. scrape_all: fetch every company's jobs concurrently (network-bound, ~all of the run time)
+  2. _run_company: diff/match/store one company at a time (fast, and the stores are not
+     built for concurrent use)
+"""
 
 from __future__ import annotations
 
+import asyncio
 import logging
+from collections.abc import Sequence
 from datetime import datetime, timezone
 
 import httpx
 
 from job_alert.diff import compute_diff, is_suspicious_empty
 from job_alert.matcher import in_my_locations, match
-from job_alert.models import AppConfig, CompanyConfig, CompanyResult, MatchedJob, RunReport
+from job_alert.models import AppConfig, CompanyConfig, CompanyResult, Job, MatchedJob, RunReport
 from job_alert.scrapers import get_scraper
 from job_alert.store import Store
 
 log = logging.getLogger(__name__)
 
+MAX_CONCURRENCY = 8  # requests in flight at once: fast, but polite to shared hosts like Greenhouse
 
-def run(config: AppConfig, store: Store, client: httpx.Client, now: datetime | None = None) -> RunReport:
+
+async def run(config: AppConfig, store: Store, client: httpx.AsyncClient, now: datetime | None = None) -> RunReport:
     now = now or datetime.now(timezone.utc)
-    results = [_run_company(c, config, store, client, now) for c in config.companies]
+    scraped = await scrape_all(config.companies, client)
+    results = [_run_company(c, outcome, config, store, now) for c, outcome in zip(config.companies, scraped)]
     return RunReport(started_at=now, results=results)
 
 
+async def scrape_all(
+    companies: Sequence[CompanyConfig], client: httpx.AsyncClient, limit: int = MAX_CONCURRENCY
+) -> list[list[Job] | Exception]:
+    """Scrape every company concurrently, at most `limit` at a time.
+
+    Returns one outcome per company, in the same order as `companies`: the job list, or the
+    exception that company's scrape raised. One broken site must not sink the whole run.
+    """
+    async def scrape_one(company: CompanyConfig, sem: asyncio.Semaphore) -> list[Job] | Exception:
+        """Scrape one company, returning the job list or the exception raised."""
+        async with sem:
+            try:
+                scraper = get_scraper(company.type)
+            except Exception as e:
+                return e
+            try:
+                return await scraper(company, client)
+            except Exception as e:
+                return e
+    sem = asyncio.Semaphore(limit)
+    return await asyncio.gather(*(scrape_one(c, sem) for c in companies))
+
+
 def _run_company(
-    company: CompanyConfig, config: AppConfig, store: Store, client: httpx.Client, now: datetime
+    company: CompanyConfig, outcome: list[Job] | Exception, config: AppConfig, store: Store, now: datetime
 ) -> CompanyResult:
-    try:
-        current = get_scraper(company.type)(company, client)
-    except Exception as e:  # one broken site must not sink the whole run
-        log.exception("scrape failed for %s", company.id)
-        return CompanyResult(company=company, error=f"{type(e).__name__}: {e}")
+    if isinstance(outcome, Exception):
+        log.error("scrape failed for %s", company.id, exc_info=outcome)
+        return CompanyResult(company=company, error=f"{type(outcome).__name__}: {outcome}")
+    current = outcome
 
     rules = config.matching
     baseline = not store.has_company(company.id)

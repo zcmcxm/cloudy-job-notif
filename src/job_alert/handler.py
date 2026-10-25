@@ -10,6 +10,7 @@ Environment (set by the CDK stack):
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 from typing import Any
@@ -17,6 +18,7 @@ from typing import Any
 import boto3
 
 from job_alert.config import load_config
+from job_alert.models import AppConfig, RunReport
 from job_alert.notifier import render_html, render_text, send_ses, subject
 from job_alert.runner import run
 from job_alert.scrapers.base import make_client
@@ -30,8 +32,7 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     config = load_config(os.environ.get("CONFIG_PATH", "config/companies.yaml"))
     store = DynamoStore(boto3.resource("dynamodb").Table(os.environ["TABLE_NAME"]))
 
-    with make_client() as http:
-        report = run(config, store, http)
+    report = asyncio.run(_scrape(config, store))
 
     subj = subject(report)
     message_id = send_ses(
@@ -45,3 +46,9 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     errors = [r.company.id for r in report.errors]
     log.info("digest sent", extra={"subject": subj, "message_id": message_id, "scrape_errors": errors})
     return {"subject": subj, "message_id": message_id, "scrape_errors": errors}
+
+
+async def _scrape(config: AppConfig, store: DynamoStore) -> RunReport:
+    # A fresh event loop per invocation (asyncio.run), and the client lives inside it.
+    async with make_client() as http:
+        return await run(config, store, http)
