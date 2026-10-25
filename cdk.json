@@ -1,0 +1,10 @@
+{
+  "app": ".venv/bin/python -m infra.app",
+  "watch": {
+    "include": ["infra/**", "src/**", "config/**"]
+  },
+  "context": {
+    "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/aws-iam:minimizePolicies": true
+  }
+}

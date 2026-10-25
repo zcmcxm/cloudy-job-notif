@@ -12,7 +12,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "respx>=0.21", "moto[dynamodb,ses]>=5"]
+dev = [
+    "pytest>=8",
+    "respx>=0.21",
+    "moto[dynamodb,ses]>=5",
+    "aws-cdk-lib>=2.200,<3",
+    "constructs>=10,<11",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -23,4 +29,4 @@ packages = ["src/job_alert"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
