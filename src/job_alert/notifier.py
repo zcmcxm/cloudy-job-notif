@@ -59,6 +59,8 @@ def render_text(report: RunReport) -> str:
         lines.append(f"  {m.job.url}")
     if not report.relevant_open:
         lines.append("No open roles match your rules.")
+    if report.stale_relevant:
+        lines.append(f"({report.stale_relevant} relevant open more than {report.stale_after_days} days hidden as stale)")
     for r in report.errors:
         lines.append(f"! {r.company.name}: {r.error}")
     return "\n".join(lines) + "\n"

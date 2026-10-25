@@ -22,9 +22,9 @@ class Job(BaseModel):
 class StoredJob(Job):
     """A Job plus the bookkeeping the store keeps between runs."""
 
-    first_seen: datetime
-    last_seen: datetime
+    first_seen: datetime  # when this run of openness started (resets if the job reopens)
     status: str = "open"  # "open" | "closed"
+    closed_at: datetime | None = None  # set when status becomes "closed"
 
 
 class CompanyConfig(BaseModel):
@@ -40,6 +40,9 @@ class MatchingRules(BaseModel):
     include_title: list[str] = Field(default_factory=list)
     exclude_title: list[str] = Field(default_factory=list)
     include_location: list[str] = Field(default_factory=list)
+    # Relevant roles open longer than this are "stale": still tracked as open (never re-announced),
+    # but left out of the digest's relevant list. None = never stale.
+    stale_after_days: int | None = Field(default=None, ge=1)
 
 
 class AppConfig(BaseModel):
@@ -68,6 +71,7 @@ class CompanyResult(BaseModel):
     relevant_open: list[MatchedJob] = Field(default_factory=list)  # every open relevant role in your locations
     closed: list[Job] = Field(default_factory=list)  # closed roles in your locations
     hidden_new: int = 0  # new roles outside your locations: stored, but not listed
+    stale_relevant: int = 0  # relevant open roles left out of relevant_open for being stale
     baseline: bool = False  # first time we've seen this company: "new" is everything
     error: str | None = None
 
@@ -75,6 +79,7 @@ class CompanyResult(BaseModel):
 class RunReport(BaseModel):
     started_at: datetime
     results: list[CompanyResult]
+    stale_after_days: int | None = None  # copied from MatchingRules, for the digest's note
 
     @property
     def relevant_open(self) -> list[tuple[CompanyConfig, MatchedJob]]:
@@ -89,6 +94,10 @@ class RunReport(BaseModel):
     @property
     def hidden_new(self) -> int:
         return sum(r.hidden_new for r in self.results if not r.baseline)
+
+    @property
+    def stale_relevant(self) -> int:
+        return sum(r.stale_relevant for r in self.results)
 
     @property
     def errors(self) -> list[CompanyResult]:

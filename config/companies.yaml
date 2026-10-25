@@ -268,3 +268,6 @@ matching:
   exclude_title: ["director", "intern", "grad", "manager", "lead", "principal", "reliability", "site reliability", "sre", "devops", "qa", "test", "data engineer", "data scientist"]
   # Leave empty to accept any location.
   include_location: ["singapore"]
+  # Relevant roles open longer than this are hidden from the digest as stale (still tracked).
+  # Counted from when this app first saw the role, not the posting date. Remove to disable.
+  stale_after_days: 45

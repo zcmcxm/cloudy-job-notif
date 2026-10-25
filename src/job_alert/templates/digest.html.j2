@@ -37,6 +37,9 @@
 {% else %}
 <p style="font-size:14px;color:#656d76;">No open roles match your rules.</p>
 {% endif %}
+{% if report.stale_relevant %}
+<p style="margin:8px 0 0;font-size:12px;color:#656d76;">{{ report.stale_relevant }} relevant role{{ "s" if report.stale_relevant != 1 }} open more than {{ report.stale_after_days }} days hidden as stale. Raise or remove <code>stale_after_days</code> in the config to list them.</p>
+{% endif %}
 
 <h3 style="margin:24px 0 8px;">All new roles</h3>
 {% for r in report.results if r.new %}

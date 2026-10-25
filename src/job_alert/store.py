@@ -52,7 +52,7 @@ class LocalJsonStore:
             prev = bucket.get(job.job_id)
             first_seen = prev.first_seen if prev and prev.status == "open" else now
             bucket[job.job_id] = StoredJob(
-                **job.model_dump(), first_seen=first_seen, last_seen=now, status="open"
+                **job.model_dump(), first_seen=first_seen, status="open"
             )
 
     def mark_closed(self, jobs: list[Job], now: datetime) -> None:
@@ -60,7 +60,7 @@ class LocalJsonStore:
             stored = self._data.get(job.company_id, {}).get(job.job_id)
             if stored:
                 stored.status = "closed"
-                stored.last_seen = now
+                stored.closed_at = now
 
     def ensure_company(self, company_id: str) -> None:
         """Remember a company even when it currently has zero openings."""
@@ -113,8 +113,9 @@ class DynamoStore:
     def record_seen(self, jobs: list[Job], now: datetime) -> None:
         for job in jobs:
             prev = self._open.get(job.company_id, {}).get(job.job_id)
-            first_seen = prev.first_seen if prev and prev.status == "open" else now
-            stored_job = StoredJob(**job.model_dump(), first_seen=first_seen, last_seen=now, status="open")
+            if prev and prev.status == "open" and prev.model_dump(include=set(Job.model_fields)) == job.model_dump():
+                continue  # still open and unchanged: skip the write
+            stored_job = StoredJob(**job.model_dump(), first_seen=prev.first_seen if prev and prev.status == "open" else now, status="open")
             self._pending[(_pk(job.company_id), _sk(job.job_id))] = _to_item(stored_job)
 
     def mark_closed(self, jobs: list[Job], now: datetime) -> None:
@@ -122,7 +123,7 @@ class DynamoStore:
             stored = self._open.get(job.company_id, {}).get(job.job_id)
             if stored:
                 stored.status = "closed"
-                stored.last_seen = now
+                stored.closed_at = now
                 self._pending[(_pk(job.company_id), _sk(job.job_id))] = _to_item(stored)
 
     def ensure_company(self, company_id: str) -> None:

@@ -11,13 +11,13 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Sequence
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import httpx
 
 from job_alert.diff import compute_diff, is_suspicious_empty
 from job_alert.matcher import in_my_locations, match
-from job_alert.models import AppConfig, CompanyConfig, CompanyResult, Job, MatchedJob, RunReport
+from job_alert.models import AppConfig, CompanyConfig, CompanyResult, Job, MatchedJob, MatchingRules, RunReport
 from job_alert.scrapers import get_scraper
 from job_alert.store import Store
 
@@ -30,7 +30,17 @@ async def run(config: AppConfig, store: Store, client: httpx.AsyncClient, now: d
     now = now or datetime.now(timezone.utc)
     scraped = await scrape_all(config.companies, client)
     results = [_run_company(c, outcome, config, store, now) for c, outcome in zip(config.companies, scraped)]
-    return RunReport(started_at=now, results=results)
+    return RunReport(started_at=now, results=results, stale_after_days=config.matching.stale_after_days)
+
+
+def is_stale(m: MatchedJob, rules: MatchingRules, now: datetime) -> bool:
+    """True when this role has been open *more than* rules.stale_after_days.
+
+    Measured from `m.open_since` (when this app first saw it open), not the posting date.
+    """
+    if rules.stale_after_days is None or m.open_since is None:
+        return False
+    return now - m.open_since > timedelta(days=rules.stale_after_days)
 
 
 async def scrape_all(
@@ -94,11 +104,15 @@ def _run_company(
         if in_my_locations(j, rules)
     ]
     new_here = [m for m in open_here if m.is_new]
+    relevant_open = [m for m in open_here if m.match.relevant and not is_stale(m, rules, now)]
+    stale_relevant = [m for m in open_here if m.match.relevant and is_stale(m, rules, now)]
+
     return CompanyResult(
         company=company,
         total_open=len(open_here),
         new=new_here,
-        relevant_open=[m for m in open_here if m.match.relevant],
+        relevant_open=relevant_open,
+        stale_relevant=len(stale_relevant),
         closed=[j for j in diff.closed if in_my_locations(j, rules)],
         hidden_new=len(diff.new) - len(new_here),
         baseline=baseline,
